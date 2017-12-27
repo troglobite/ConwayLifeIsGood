@@ -1,0 +1,11 @@
+.dead {
+    background-color: red;
+}
+
+.alive {
+    background-color: green;
+}
+
+body {
+    background-color: white;
+}
