@@ -44,7 +44,7 @@ function getCellCSSClass(cell) {
 const Cell = props => (
   <td
     className={getCellCSSClass(props.data)}
-    onClick={() => props.onClick(props.rowIndex, props.colIndex)}
+    onClick={() => props.onClick()}
   />
 );
 
@@ -52,16 +52,18 @@ const TableRow = props => (
   // React.createElement("tr",{},row.map((cell) => React.createElement("td",{},cell)))
   <tr>
     {props.row.map((cell, colIndex) => {
-      return <Cell data={cell} onClick={props.onClick} rowIndex={props.rowIndex} colIndex={colIndex}/>;
+      return <Cell key={colIndex} data={cell} onClick={() => props.onClick(colIndex)} />;
     })}
   </tr>
 );
 
 const Table = (props) => (
   <table>
+    <tbody>
     {props.data.map((row, rowIndex) => {
-      return <TableRow row={row} rowIndex={rowIndex} onClick={flipRowCol}/>;
+      return <TableRow key={rowIndex} row={row} onClick={(colIndex) => flipRowCol(rowIndex, colIndex)}/>;
     })}
+    </tbody>
   </table>
 );
 
@@ -147,4 +149,4 @@ function flipRowCol(row, col){
 //     printBoard(playGame(gameBoard));
 // }
 
-window.onload(renderHTML(gameBoard));
+renderHTML(gameBoard);
