@@ -1,9 +1,13 @@
 .dead {
     background-color: red;
+    width: 20px;
+    height: 20px;
 }
 
 .alive {
     background-color: green;
+    width: 20px;
+    height: 20px;
 }
 
 body {

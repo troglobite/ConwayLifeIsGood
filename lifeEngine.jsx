@@ -8,130 +8,137 @@
 // // determine the state of the tile based on the state of its neighbors
 // // apply state change if required by rules
 // // go to next tile
-var gameBoard = [
-    [1, 0, 1, 1],
-    [0, 1, 0, 1],
-    [1, 0, 1, 1],
-    [1, 1, 1, 0]
-];
+var gameBoard = [[1, 0, 1, 1], [0, 1, 0, 1], [1, 0, 1, 1], [1, 1, 1, 0]];
 
 function playGame(board) {
-    var newBoard = [];
+  var newBoard = [];
 
-    for (var a = 0; a < board.length; a++) {
-        newBoard.push([]);
-        for (var b = 0; b < board[a].length; b++) {
-            //console.log("(" + a + "," + b + ")");
-            var currentState = getStateAt(board, a, b);
-            //console.log(getStateAt(board, a, b));
-            var neighbors = findNeighborsOf(a, b);
-            var stateOfNeighbors = neighbors.map(neighbor => {
-                return getStateAt(board, neighbor[0], neighbor[1]);
-            });
-            var numOfAlive = sumOf(stateOfNeighbors);
-            //console.log(numOfAlive);
-            var newState = nextState(currentState, numOfAlive);
-            //console.log(newState);
-            newBoard[a][b] = newState;
-        }
+  for (var a = 0; a < board.length; a++) {
+    newBoard.push([]);
+    for (var b = 0; b < board[a].length; b++) {
+      // console.log("(" + a + "," + b + ")");
+      var currentState = getStateAt(board, a, b);
+      // console.log(getStateAt(board, a, b));
+      var neighbors = findNeighborsOf(a, b);
+      var stateOfNeighbors = neighbors.map(neighbor => {
+        return getStateAt(board, neighbor[0], neighbor[1]);
+      });
+      var numOfAlive = sumOf(stateOfNeighbors);
+      // console.log(numOfAlive);
+      var newState = nextState(currentState, numOfAlive);
+      // console.log(newState);
+      newBoard[a][b] = newState;
     }
-    return newBoard;
+  }
+  return newBoard;
 }
 
-function getCellCSSClass(cell){
-    if(cell === 1){
-        return "alive";
-    } else {
-        return "dead";
-    }
+function getCellCSSClass(cell) {
+  if (cell === 1) {
+    return "alive";
+  } else {
+    return "dead";
+  }
 }
 
-const TableRow = ({row}) => (
-    //React.createElement("tr",{},row.map((cell) => React.createElement("td",{},cell)))
-        <tr>
-            {row.map(cell => {
-                return <td className={getCellCSSClass(cell)}>{cell}</td>
-            })}
-        </tr>
-)
+const Cell = props => (
+  <td
+    className={getCellCSSClass(props.data)}
+    onClick={() => props.onClick(props.rowIndex, props.colIndex)}
+  />
+);
 
-const Table = ({data}) => (
-    //<div>Hello Engine Div1</div>
-    <table>
-        {data.map(row => {
-            return <TableRow row={row} />
-        })}
-    </table>
-)
+const TableRow = props => (
+  // React.createElement("tr",{},row.map((cell) => React.createElement("td",{},cell)))
+  <tr>
+    {props.row.map((cell, colIndex) => {
+      return <Cell data={cell} onClick={props.onClick} rowIndex={props.rowIndex} colIndex={colIndex}/>;
+    })}
+  </tr>
+);
+
+const Table = (props) => (
+  <table>
+    {props.data.map((row, rowIndex) => {
+      return <TableRow row={row} rowIndex={rowIndex} onClick={flipRowCol}/>;
+    })}
+  </table>
+);
 
 const Button = () => {
-    function handleClick(){
-        nextBoard();
-    }
-    return <button onClick={handleClick}>Next</button>
-}
+  return <button onClick={nextBoard}>Next</button>;
+};
 
-function renderHTML(newBoard){
-    ReactDOM.render(
-        <Table data={newBoard} />,
-        document.getElementById("root")
-    );
-    ReactDOM.render(
-        <Button />,
-        document.getElementById("button")
-    );
+function renderHTML(newBoard) {
+  ReactDOM.render(<Table data={newBoard} />, document.getElementById("root"));
+  ReactDOM.render(<Button />, document.getElementById("button"));
 }
 
 function printBoard(newBoard) {
-    console.log(newBoard.join("\n"));
+  console.log(newBoard.join("\n"));
 }
 
 function nextState(current, countOfAlive) {
-    var state = 0;
-    if (current == 1 && countOfAlive < 2) {
-        state = 0;
-    }
-    if (current == 1 && countOfAlive === 2 || countOfAlive === 3) {
-        state = 1;
-    }
-    if (current == 1 && countOfAlive > 3) {
-        state = 0;
-    }
-    if (current == 0 && countOfAlive === 3) {
-        state = 1;
-    }
-    return state;
+  var state = 0;
+  if (current == 1 && countOfAlive < 2) {
+    state = 0;
+  }
+  if ((current == 1 && countOfAlive === 2) || countOfAlive === 3) {
+    state = 1;
+  }
+  if (current == 1 && countOfAlive > 3) {
+    state = 0;
+  }
+  if (current == 0 && countOfAlive === 3) {
+    state = 1;
+  }
+  return state;
 }
 
 function findNeighborsOf(a, b) {
-    var arrOfNeighbors = [];
-    for (var rows = a - 1; rows <= a + 1; rows++) {
-        for (var columns = b - 1; columns <= b + 1; columns++) {
-            if (rows === a && columns === b) {
-                continue;
-            }
-            arrOfNeighbors.push([rows, columns]);
-        }
+  var arrOfNeighbors = [];
+  for (var rows = a - 1; rows <= a + 1; rows++) {
+    for (var columns = b - 1; columns <= b + 1; columns++) {
+      if (rows === a && columns === b) {
+        continue;
+      }
+      arrOfNeighbors.push([rows, columns]);
     }
-    return arrOfNeighbors;
+  }
+  return arrOfNeighbors;
 }
 
 function getStateAt(board, row, column) {
-    return board && board[row] && board[row][column] || 0;
+  return (board && board[row] && board[row][column]) || 0;
+}
+
+function setStateAt(board, row, column, desiredState){
+  board[row][column] = desiredState;
+  return board;
+}
+
+function flipStateAt(board, row, column){
+  const state = getStateAt(board, row, column);
+  return setStateAt(board, row, column, state === 1 ? 0 : 1);
 }
 
 function sumOf(array) {
-    var total = 0;
-    array.forEach(function(number) {
-        total += number;
-    });
-    return total;
+  var total = 0;
+  array.forEach(function(number) {
+    total += number;
+  });
+  return total;
 }
 
-function nextBoard(){
-    gameBoard = playGame(gameBoard);
-    renderHTML(gameBoard);
-    printBoard(playGame(gameBoard));
+function nextBoard() {
+  gameBoard = playGame(gameBoard);
+  renderHTML(gameBoard);
+  printBoard(playGame(gameBoard));
+}
+
+function flipRowCol(row, col){
+  gameBoard = flipStateAt(gameBoard, row, col);
+  renderHTML(gameBoard);
 }
 
 // for (var i = 0; i < 5; i++) {
