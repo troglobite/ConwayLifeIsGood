@@ -8,7 +8,16 @@
 // // determine the state of the tile based on the state of its neighbors
 // // apply state change if required by rules
 // // go to next tile
-var gameBoard = [[1, 0, 1, 1], [0, 1, 0, 1], [1, 0, 1, 1], [1, 1, 1, 0]];
+var gameBoard = makeBoard(15,15);
+var playState = false;
+
+function makeBoard(colSize, rowSize){
+  var rows = [];
+  for(var i = 0; i < colSize; i++){
+    rows[i] = Array(rowSize).fill(0);
+  }
+  return rows;
+}
 
 function playGame(board) {
   var newBoard = [];
@@ -67,17 +76,33 @@ const Table = (props) => (
   </table>
 );
 
-const Button = () => {
-  return <button onClick={nextBoard}>Next</button>;
+const Button = (props) => {
+  return <button onClick={props.onClick}>{props.name}</button>
 };
 
 function renderHTML(newBoard) {
   ReactDOM.render(<Table data={newBoard} />, document.getElementById("root"));
-  ReactDOM.render(<Button />, document.getElementById("button"));
+  ReactDOM.render(<Button onClick={nextBoard} name="Next"/>, document.getElementById("nextBtn"));
+  ReactDOM.render(<Button onClick={callNextBoardContinously} name="Play"/>, document.getElementById("playBtn"));
+  ReactDOM.render(<Button onClick={stopNextBoardContinously} name="Pause" />, document.getElementById("pauseBtn"));
 }
 
 function printBoard(newBoard) {
   console.log(newBoard.join("\n"));
+}
+
+function callNextBoardContinously(){
+  for(var i = 0; i > 10; i++){
+    console.log(i);
+  }
+}
+
+function stopNextBoardContinously(){
+  setPlayState(false);
+}
+
+function setPlayState(state){
+  playState = state; 
 }
 
 function nextState(current, countOfAlive) {
