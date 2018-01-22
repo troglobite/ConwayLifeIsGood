@@ -9,7 +9,8 @@
 // // apply state change if required by rules
 // // go to next tile
 var gameBoard = makeBoard(15,15);
-var playState = false;
+var boardInterval;
+var score = 0;
 
 function makeBoard(colSize, rowSize){
   var rows = [];
@@ -36,7 +37,8 @@ function playGame(board) {
       // console.log(numOfAlive);
       var newState = nextState(currentState, numOfAlive);
       // console.log(newState);
-      newBoard[a][b] = newState;
+      setStateAt(newBoard, a, b, newState);
+      //newBoard[a][b] = newState;
     }
   }
   return newBoard;
@@ -80,29 +82,44 @@ const Button = (props) => {
   return <button onClick={props.onClick}>{props.name}</button>
 };
 
+const Header = (props) => {
+  return <h3>{props.value}</h3>
+};
+
+//adding abiltiy to set variable TODO:
+const IntervalInput = (props) => {
+  return <h4>Interval Variable</h4><br><input type='text'></input>
+}
+
 function renderHTML(newBoard) {
+  ReactDOM.render(<Header value={score} />, document.getElementById("scoreDiv"));
   ReactDOM.render(<Table data={newBoard} />, document.getElementById("root"));
   ReactDOM.render(<Button onClick={nextBoard} name="Next"/>, document.getElementById("nextBtn"));
-  ReactDOM.render(<Button onClick={callNextBoardContinously} name="Play"/>, document.getElementById("playBtn"));
-  ReactDOM.render(<Button onClick={stopNextBoardContinously} name="Pause" />, document.getElementById("pauseBtn"));
+  ReactDOM.render(<Button onClick={resetBoard} name="Reset"/>, document.getElementById("resetBtn"));
+  ReactDOM.render(<Button onClick={callNextBoardContinously} name="Play" />, document.getElementById("playBtn"));
+  ReactDOM.render(<Button onClick={stopNextBoardContinously} name="Stop" />, document.getElementById("stopBtn"));
+  ReactDOM.render(<IntervalHeader />, document.getElementById("intervalDiv"));
 }
 
 function printBoard(newBoard) {
   console.log(newBoard.join("\n"));
 }
 
+function resetBoard(){
+  gameBoard = makeBoard(15,15);
+  score = 0;
+  renderHTML(gameBoard);
+  printBoard(playGame(gameBoard));
+}
+
 function callNextBoardContinously(){
-  for(var i = 0; i > 10; i++){
-    console.log(i);
-  }
+    boardInterval = setInterval(() => {
+      nextBoard();
+    }, 1000);
 }
 
 function stopNextBoardContinously(){
-  setPlayState(false);
-}
-
-function setPlayState(state){
-  playState = state; 
+  clearInterval(boardInterval);
 }
 
 function nextState(current, countOfAlive) {
@@ -159,6 +176,8 @@ function sumOf(array) {
 
 function nextBoard() {
   gameBoard = playGame(gameBoard);
+  score++;
+  console.log(score);
   renderHTML(gameBoard);
   printBoard(playGame(gameBoard));
 }
