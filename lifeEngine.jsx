@@ -87,8 +87,8 @@ const Header = (props) => {
 };
 
 //adding abiltiy to set variable TODO:
-const IntervalInput = (props) => {
-  return <h4>Interval Variable</h4><br><input type='text'></input>
+const Input = (props) => {
+  return <form><input type={props.type} value={props.value} name={props.name}></input><input type="submit"></input></form>
 }
 
 function renderHTML(newBoard) {
@@ -98,7 +98,7 @@ function renderHTML(newBoard) {
   ReactDOM.render(<Button onClick={resetBoard} name="Reset"/>, document.getElementById("resetBtn"));
   ReactDOM.render(<Button onClick={callNextBoardContinously} name="Play" />, document.getElementById("playBtn"));
   ReactDOM.render(<Button onClick={stopNextBoardContinously} name="Stop" />, document.getElementById("stopBtn"));
-  ReactDOM.render(<IntervalHeader />, document.getElementById("intervalDiv"));
+  ReactDOM.render(<Input type="number" value="1" name="interval"/>, document.getElementById("intervalDiv"));
 }
 
 function printBoard(newBoard) {
